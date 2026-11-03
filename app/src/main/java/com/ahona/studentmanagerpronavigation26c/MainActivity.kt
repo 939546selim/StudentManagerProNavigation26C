@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ahona.studentmanagerpronavigation26c.navigation.AppNavigation
+import com.ahona.studentmanagerpronavigation26c.navigation.TypeSafeNavigation
 import com.ahona.studentmanagerpronavigation26c.ui.theme.StudentManagerProNavigation26CTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavigation()
+                    TypeSafeNavigation()
+
                 }
             }
         }
