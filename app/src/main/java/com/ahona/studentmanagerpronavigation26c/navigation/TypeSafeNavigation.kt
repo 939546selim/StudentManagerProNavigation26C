@@ -14,11 +14,38 @@ import com.ahona.studentmanagerpronavigation26c.ui.screens.AddStudentScreen
 import com.ahona.studentmanagerpronavigation26c.ui.screens.EditStudentScreen
 import com.ahona.studentmanagerpronavigation26c.ui.screens.SearchStudentsScreen
 import com.ahona.studentmanagerpronavigation26c.ui.screens.SettingsScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
 fun TypeSafeNavigation() {
 
     val navController = rememberNavController()
+    val navigationViewModel: NavigationViewModel = viewModel()
+
+    LaunchedEffect(navigationViewModel) {
+        navigationViewModel.navigationEvents.collect { event ->
+
+            when (event) {
+
+                NavigationEvent.StudentSaved -> {
+                    navController.popBackStack()
+                }
+
+                NavigationEvent.NavigateBack -> {
+                    navController.popBackStack()
+                }
+
+                is NavigationEvent.OpenStudentDetails -> {
+                    navController.navigate(
+                        StudentDetailsRoute(event.studentId)
+                    )
+                }
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -41,14 +68,36 @@ fun TypeSafeNavigation() {
                 },
 
                 onStudentDetailsClick = {
-                    navController.navigate(
-                        StudentDetailsRoute(studentId = 101)
+                    navigationViewModel.sendNavigationEvent(
+                        NavigationEvent.OpenStudentDetails( studentId = 101)
                     )
+
                 }
             )
         }
 
 
+
+//        composable<AddStudentRoute> {
+//
+//            val context = LocalContext.current
+//
+//            AddStudentScreen(
+//                onSaveClick = { name, email ->
+//
+//                    Toast.makeText(
+//                        context,
+//                        "Name: $name\nEmail: $email",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//
+//                    navController.popBackStack()
+//                },
+//                onBackClick = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
 
         composable<AddStudentRoute> {
 
@@ -59,14 +108,18 @@ fun TypeSafeNavigation() {
 
                     Toast.makeText(
                         context,
-                        "Name: $name\nEmail: $email",
-                        Toast.LENGTH_LONG
+                        "Student saved: $name",
+                        Toast.LENGTH_SHORT
                     ).show()
 
-                    navController.popBackStack()
+                    navigationViewModel.sendNavigationEvent(
+                        NavigationEvent.StudentSaved
+                    )
                 },
                 onBackClick = {
-                    navController.popBackStack()
+                    navigationViewModel.sendNavigationEvent(
+                        NavigationEvent.NavigateBack
+                    )
                 }
             )
         }
