@@ -1,47 +1,32 @@
+//
+
 package com.ahona.studentmanagerpronavigation26c.ui.screens
 
-
-
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ahona.studentmanagerpronavigation26c.data.model.Student
 
 @Composable
 fun EditStudentScreen(
-    studentId: Int,
-    initialName: String,
-    initialEmail: String,
-    onUpdateClick: (Int, String, String) -> Unit,
+    student: Student?,
+    onUpdateClick: (Student) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var studentName by remember {
-        mutableStateOf(initialName)
+    var name by remember(student?.studentId) {
+        mutableStateOf(student?.name ?: "")
     }
 
-    var studentEmail by remember {
-        mutableStateOf(initialEmail)
+    var email by remember(student?.studentId) {
+        mutableStateOf(student?.email ?: "")
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Top
+            .padding(16.dp)
     ) {
 
         Text(
@@ -49,52 +34,54 @@ fun EditStudentScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Student ID: $studentId")
+        if (student == null) {
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text("Student not found.")
 
-        OutlinedTextField(
-            value = studentName,
-            onValueChange = { studentName = it },
-            label = { Text("Student Name") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+        } else {
 
-        Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Student Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        OutlinedTextField(
-            value = studentEmail,
-            onValueChange = { studentEmail = it },
-            label = { Text("Student Email") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Student Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Button(
-            onClick = {
-                onUpdateClick(
-                    studentId,
-                    studentName.trim(),
-                    studentEmail.trim()
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = studentName.isNotBlank() &&
-                    studentEmail.isNotBlank()
-        ) {
-            Text("Update Student")
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    if (name.isNotBlank() && email.isNotBlank()) {
+                        onUpdateClick(
+                            student.copy(
+                                name = name.trim(),
+                                email = email.trim()
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = name.isNotBlank() && email.isNotBlank()
+            ) {
+                Text("Update Student")
+            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
+        OutlinedButton(
+            onClick = onBackClick
         ) {
             Text("Back")
         }
